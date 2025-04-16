@@ -81,7 +81,6 @@ func (r *CountPodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	}
 	logger.Info("Running")
 	logger.Info("Running")
-	logger.Info("Running")
 
 	return ctrl.Result{}, nil
 }

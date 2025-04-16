@@ -1,0 +1,9 @@
+apiVersion: count.my.domain/v1
+kind: CountPod
+metadata:
+  labels:
+    app.kubernetes.io/name: controllercountpods
+    app.kubernetes.io/managed-by: kustomize
+  name: countpod-sample
+spec:
+  # TODO(user): Add fields here

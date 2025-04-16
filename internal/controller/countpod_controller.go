@@ -19,11 +19,12 @@ package controller
 import (
 	"context"
 	countv1 "github.com/Abbashozefa/controllercountpods/api/v1"
-	// corev1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
+	"strconv"
 )
 
 // CountPodReconciler reconciles a CountPod object
@@ -54,23 +55,29 @@ func (r *CountPodReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	logger.Info("Running")
 
 	// TODO(user): your logic here
-	var mypod countv1.CountPod
-	if err := r.Get(ctx, req.NamespacedName, &mypod); err != nil {
+	var mypod countv1.CountPodList
+	if err := r.List(ctx, &mypod); err != nil {
 		logger.Error(err, "unable to fetch list")
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
-	if len(mypod) == 0 {
-		logger.V(1).Info("no resources configured")
+
+	if len(mypod.Items) == 0 {
+		logger.V(1).Info("no pod trackers configured")
 		return ctrl.Result{}, nil
 	} else {
-		var podObject corev1.Pod
-		err := r.Get(context.Background(), req.NamespacedName, &podObject)
+		var podObject corev1.PodList
+		err := r.List(context.Background(), &podObject)
 		if err != nil {
 			return ctrl.Result{}, client.IgnoreNotFound(err)
 		}
 		logger.V(1).Info("found repoter configured. sending report")
-		logger.V(1).Info(podObject.Items)
-
+		// logger.Info(len(podObject.Items))
+		var count int
+		for _, pod := range podObject.Items {
+			logger.Info("Found Pod", "name", pod.Name, "status", pod.Status.Phase)
+			count += 1
+		}
+		logger.Info(strconv.Itoa(count))
 	}
 	logger.Info("Running")
 	logger.Info("Running")
